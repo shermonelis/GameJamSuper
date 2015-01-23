@@ -12,11 +12,22 @@ public class ControlCharacter : TNBehaviour {
 	{
 		if(TNManager.isThisMyObject)
 			instance = this;
+		else
+			Destroy(this);
 	}
-	
+
+	[RFC] public void test()
+	{
+		Debug.Log("test");
+	}
+
 	// Update is called once per frame
 	void Update () 
 	{
+
+		if(Input.GetKeyDown(KeyCode.CapsLock))
+			GetComponent<TNObject>().Send("test", Target.All);
+
 		if(Input.GetKey(KeyCode.W))
 			transform.position += transform.forward * 5 * Time.deltaTime;
 	
