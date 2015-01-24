@@ -20,7 +20,6 @@ public class PlayerInfo : TNBehaviour
 	{
 		if(TNManager.isThisMyObject)
 		{
-
 			instance = this;
 		}else
 			enabled = false;
@@ -28,7 +27,7 @@ public class PlayerInfo : TNBehaviour
 
 	void Start()
 	{
-		DontDestroyOnLoad(gameObject);
+		//DontDestroyOnLoad(gameObject);
 	}
 
 	public bool isReady()
@@ -72,4 +71,3 @@ public class PlayerInfo : TNBehaviour
 		m_FirstPlayer = first;
 	}
 }
-

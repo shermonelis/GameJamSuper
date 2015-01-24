@@ -58,7 +58,7 @@ public class Lobby : TNBehaviour
 		{
 			TNManager.Create(GameObject.Find("Network").GetComponent<TNManager>().objects[0], false);
 			Destroy(this);
-			Application.LoadLevel("Game");			
+			Application.LoadLevelAdditive("Game");			
 		}
 	}
 

@@ -24,6 +24,7 @@ public class ControlCharacter : TNBehaviour {
 	public Vector3 f_newPosition;
 	public Quaternion f_newRotation;
 
+	public bool m_MyObject = true;
 	//
 	// Init
 	//
@@ -36,7 +37,8 @@ public class ControlCharacter : TNBehaviour {
 			m_Bottom = transform.Find("Bottom");
 		}else{
 			gameObject.transform.Find("Camera").GetComponent<Camera>().enabled = false;
-			enabled = false;
+			//enabled = false;
+			m_MyObject = false;
 		}
 	}
 	void Start(){
@@ -64,8 +66,15 @@ public class ControlCharacter : TNBehaviour {
 	//
 	void Update () 
 	{
+
+		ProcessPosition();
+
+		if(!m_MyObject)
+			return;
+
+
 		ProcessStuns();
-		Movement();
+		Inputs();
 
 		Rotate();
 		Animate();
@@ -75,7 +84,7 @@ public class ControlCharacter : TNBehaviour {
 	//
 	// Character movement
 	//
-	private void Movement()
+	private void Inputs()
 	{
 		if(m_Stunned)
 			return;
@@ -101,8 +110,13 @@ public class ControlCharacter : TNBehaviour {
 		if(Input.GetMouseButtonDown(0))
 			Hit();
 
+	}
+
+	private void ProcessPosition()
+	{
 		transform.position = Vector3.MoveTowards(transform.position, new Vector3(f_newPosition.x, transform.position.y, f_newPosition.z), Time.deltaTime * m_Speed * 10);
 	}
+
 	//
 	// Look around
 	//
