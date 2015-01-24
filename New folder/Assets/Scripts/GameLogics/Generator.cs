@@ -22,6 +22,7 @@ public class Generator : TNBehaviour {
 	SetMasterPlayer playerScript;
 	void Start () {
 		playerScript = GameObject.Find("PlayerInfo(Clone)").GetComponent<SetMasterPlayer>() as SetMasterPlayer;
+		TNManager m_tnManager = GameObject.Find("Network").GetComponent<TNManager>();
 		m_NetObject = GetComponent<TNObject>();
 
 		CubeInstPoints = new Vector3[redCubesCount+greenCubesCount+blueCubesCount];
@@ -34,6 +35,7 @@ public class Generator : TNBehaviour {
 		if(playerScript.isFirstPlayer)
 			for(int i = 0; i < CubeInstPoints.Length; i++){
 				m_NetObject.Send("GetPublicCubeValues", Target.Others, i, CubeInstPoints[i]);
+			TNManager.Create(m_tnManager.objects[2], CubeInstPoints[i], Quaternion.identity, false);
 			}
 	}
 	public void GenerateSpawnVectors(int count){
@@ -55,6 +57,5 @@ public class Generator : TNBehaviour {
 	[RFC]
 	public void GetPublicCubeValues(int i, Vector3 vect){
 			CubeInstPoints[i]= vect;
-		Debug.Log(i);
 	}
 }
