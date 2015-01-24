@@ -7,7 +7,6 @@ public class ControlCharacter : TNBehaviour {
 	// instance
 	public static ControlCharacter instance;
 
-
 	//parameters
 	public TNObject m_NetObject;
 	public float m_Speed = 5;
@@ -18,6 +17,9 @@ public class ControlCharacter : TNBehaviour {
 	public GameObject m_PickedObject;
 
 	public Transform m_Bottom;
+
+	public Vector3 f_newPosition;
+	public Vector3 f_newRotation;
 
 	//
 	// Init
@@ -33,6 +35,10 @@ public class ControlCharacter : TNBehaviour {
 			gameObject.transform.Find("Camera").GetComponent<Camera>().enabled = false;
 			enabled = false;
 		}
+	}
+	void Start(){
+		f_newRotation=transform.eulerAngles;
+		f_newPosition = transform.position;
 	}
 	//
 	// Set pickable objet. called from trigger
@@ -67,22 +73,24 @@ public class ControlCharacter : TNBehaviour {
 	private void Movement()
 	{
 		if(Input.GetKey(KeyCode.W))
-			transform.position += transform.forward * m_Speed * Time.deltaTime;
+			f_newPosition += transform.forward * m_Speed * Time.deltaTime;
 		
 		if(Input.GetKey(KeyCode.S))
-			transform.position += transform.forward * -m_Speed * Time.deltaTime;
+			f_newPosition += transform.forward * -m_Speed * Time.deltaTime;
 		
 		if(Input.GetKey(KeyCode.D))
-			transform.position += transform.right * m_Speed * Time.deltaTime;
+			f_newPosition += transform.right * m_Speed * Time.deltaTime;
 		
 		if(Input.GetKey(KeyCode.A))
-			transform.position += transform.right * -m_Speed * Time.deltaTime;
+			f_newPosition += transform.right * -m_Speed * Time.deltaTime;
 
 		if(Input.GetKeyDown(KeyCode.Space) && IsGrounded())
 			Jump ();
 
 		if(Input.GetKeyDown(KeyCode.E))
 			PickDropObject();
+
+		transform.position = Vector3.Lerp(transform.position, f_newPosition, Time.deltaTime);
 	}
 
 	//
@@ -90,7 +98,8 @@ public class ControlCharacter : TNBehaviour {
 	//
 	private void Rotate()
 	{
-		transform.eulerAngles = new Vector3(0, Input.mousePosition.x*m_MouseSensitivity, 0);
+		f_newRotation = new Vector3(0, Input.mousePosition.x*m_MouseSensitivity, 0);
+		transform.eulerAngles = Vector3.Lerp( transform.eulerAngles, f_newRotation, Time.deltaTime);
 	}
 
 	//
@@ -127,14 +136,14 @@ public class ControlCharacter : TNBehaviour {
 				m_NetObject.Send("CallAnimation", Target.Others, "jump_pose");
 			}
 
-		}else if(m_LastPosition != transform.position)
+		}else if(m_LastPosition != f_newPosition)
 		{
 			if(!animation.IsPlaying("run"))
 			{
 				animation.CrossFade("run");
 				m_NetObject.Send("CallAnimation", Target.Others, "run");
 			}
-			m_LastPosition = transform.position;
+			m_LastPosition = f_newPosition;
 		}else
 		{
 			if(!animation.IsPlaying("idle"))
