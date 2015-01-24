@@ -21,6 +21,7 @@ public class PlayerInfo : TNBehaviour
 		if(TNManager.isThisMyObject)
 		{
 			instance = this;
+			DontDestroyOnLoad(gameObject);
 		}else
 			enabled = false;
 	}

@@ -18,9 +18,6 @@ public class Lobby : TNBehaviour
 		}else
 			enabled = false;
 	}
-	void Start(){
-		setIsPlayerFirst();
-	}
 
 	void OnGUI()
 	{
@@ -61,8 +58,7 @@ public class Lobby : TNBehaviour
 		{
 			TNManager.Create(GameObject.Find("Network").GetComponent<TNManager>().objects[0], false);
 			Destroy(this);
-			Application.LoadLevel("Game");
-			
+			Application.LoadLevel("Game");			
 		}
 	}
 
@@ -77,12 +73,7 @@ public class Lobby : TNBehaviour
 			PlayerInfo.instance.CallSetReady(!PlayerInfo.instance.isReady());
 	}
 	#region Helper Functions
-	public void setIsPlayerFirst(){
-		if(Lobby.instance.m_PlayerCount==1){
-			SpawnCharacter.isFirstPlayer = true;
-		} else
-			SpawnCharacter.isFirstPlayer = false;
-	}
+
 	#endregion
 }
 
