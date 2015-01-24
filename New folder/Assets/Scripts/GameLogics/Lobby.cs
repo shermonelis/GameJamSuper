@@ -8,7 +8,8 @@ public class Lobby : TNBehaviour
 	public static Lobby instance;
 
 	private int m_ReadyCount = 0;
-	private int m_PlayerCount = 0;
+	[HideInInspector]
+	public int m_PlayerCount = 0;
 	void Awake()
 	{
 		if(TNManager.isThisMyObject)
@@ -16,6 +17,9 @@ public class Lobby : TNBehaviour
 			instance = this;
 		}else
 			enabled = false;
+	}
+	void Start(){
+		setIsPlayerFirst();
 	}
 
 	void OnGUI()
@@ -48,10 +52,7 @@ public class Lobby : TNBehaviour
 				m_ReadyCount++;
 			}
 		}
-
 		m_PlayerCount = pinfos.Length;
-
-
 	}
 
 	void FixedUpdate()
@@ -75,5 +76,13 @@ public class Lobby : TNBehaviour
 		if(PlayerInfo.instance.m_Team != -1)
 			PlayerInfo.instance.CallSetReady(!PlayerInfo.instance.isReady());
 	}
+	#region Helper Functions
+	public void setIsPlayerFirst(){
+		if(Lobby.instance.m_PlayerCount==1){
+			SpawnCharacter.isFirstPlayer = true;
+		} else
+			SpawnCharacter.isFirstPlayer = false;
+	}
+	#endregion
 }
 
