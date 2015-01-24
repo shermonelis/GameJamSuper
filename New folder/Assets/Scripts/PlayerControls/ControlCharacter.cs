@@ -29,8 +29,10 @@ public class ControlCharacter : TNBehaviour {
 			instance = this;
 			m_NetObject = GetComponent<TNObject>();
 			m_Bottom = transform.Find("Bottom");
-		}else
+		}else{
+			gameObject.transform.Find("Camera").GetComponent<Camera>().enabled = false;
 			enabled = false;
+		}
 	}
 
 	//
