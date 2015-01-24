@@ -18,17 +18,20 @@ public class Generator : TNBehaviour {
 	public Vector3[] CubeInstPoints;
 	Transform spawner;
 	LayerMask layer = 1 << 8;
+
+	SetMasterPlayer playerScript;
 	void Start () {
+		playerScript = GameObject.Find("PlayerInfo(Clone)").GetComponent<SetMasterPlayer>() as SetMasterPlayer;
 		m_NetObject = GetComponent<TNObject>();
 
 		CubeInstPoints = new Vector3[redCubesCount+greenCubesCount+blueCubesCount];
 		spawner = transform.FindChild("Spawner");
 		//if I am fist then GenerateSpawnVectors
-		if(SpawnCharacter.isFirstPlayer)
+		if(playerScript.isFirstPlayer)
 			GenerateSpawnVectors (redCubesCount+greenCubesCount+blueCubesCount);
 
 		//else get values from the first guy;
-		if(SpawnCharacter.isFirstPlayer)
+		if(playerScript.isFirstPlayer)
 			for(int i = 0; i < CubeInstPoints.Length; i++){
 				m_NetObject.Send("GetPublicCubeValues", Target.Others, i, CubeInstPoints[i]);
 			}
@@ -52,5 +55,6 @@ public class Generator : TNBehaviour {
 	[RFC]
 	public void GetPublicCubeValues(int i, Vector3 vect){
 			CubeInstPoints[i]= vect;
+		Debug.Log(i);
 	}
 }
