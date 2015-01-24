@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using TNet;
 
-public class PlayerInfo : MonoBehaviour
+public class PlayerInfo : TNBehaviour
 {
 	//instance
 	public static PlayerInfo instance;
@@ -25,18 +25,15 @@ public class PlayerInfo : MonoBehaviour
 			enabled = false;
 	}
 
-	//
-	//
-	//
-	void Start()
+	public bool isReady()
 	{
-		GameObject.Find("Lobby").GetComponent<Lobby>().AddPlayer(PlayerInfo.instance.m_PlayerName);
+		return m_Ready;
 	}
-
 
 	//
 	// Set Team range [0, 1] 
 	//
+	public void CallSetTeam(int team) { tno.Send("SetTeam", Target.AllSaved, team); }
 	[RFC] public void SetTeam(int team)
 	{
 		m_Team = team;
@@ -45,6 +42,7 @@ public class PlayerInfo : MonoBehaviour
 	//
 	// Set Name
 	//
+	public void CallSetName(string pname) { tno.Send("SetName", Target.AllSaved, pname); }
 	[RFC] public void SetName(string pname)
 	{
 		m_PlayerName = pname;
@@ -53,6 +51,7 @@ public class PlayerInfo : MonoBehaviour
 	//
 	// Set ready
 	//
+	public void CallSetReady(bool ready) { tno.Send("SetReady", Target.AllSaved, ready); }
 	[RFC] public void SetReady(bool ready)
 	{
 		m_Ready = ready;

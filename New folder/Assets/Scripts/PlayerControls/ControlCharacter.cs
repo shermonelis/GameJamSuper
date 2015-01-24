@@ -34,7 +34,6 @@ public class ControlCharacter : TNBehaviour {
 			enabled = false;
 		}
 	}
-
 	//
 	// Set pickable objet. called from trigger
 	//
