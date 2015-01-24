@@ -30,7 +30,7 @@ public class PlayerInfo : MonoBehaviour
 	//
 	void Start()
 	{
-		GameObject.Find("Lobby").GetComponent<Lobby>().AddPlayer(PlayerInfo.instance);
+		GameObject.Find("Lobby").GetComponent<Lobby>().AddPlayer(PlayerInfo.instance.m_PlayerName);
 	}
 
 
