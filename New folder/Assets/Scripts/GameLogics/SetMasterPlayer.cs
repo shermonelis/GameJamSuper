@@ -5,7 +5,6 @@ public class SetMasterPlayer : MonoBehaviour {
 	public bool isFirstPlayer; //seting master player
 
 	void Start () {
-		Debug.Log("SetScript");
 		setIsPlayerFirst();
 	}
 	
