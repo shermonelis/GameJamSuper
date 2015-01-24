@@ -35,7 +35,7 @@ public class Generator : TNBehaviour {
 		if(playerScript.isFirstPlayer)
 			for(int i = 0; i < CubeInstPoints.Length; i++){
 				m_NetObject.Send("GetPublicCubeValues", Target.Others, i, CubeInstPoints[i]);
-			TNManager.Create(m_tnManager.objects[2], CubeInstPoints[i], Quaternion.identity, true);
+			TNManager.Create(m_tnManager.objects[2], CubeInstPoints[i], Quaternion.identity, false);
 			}
 	}
 	public void GenerateSpawnVectors(int count){
