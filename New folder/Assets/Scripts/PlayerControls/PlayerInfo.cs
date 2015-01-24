@@ -9,7 +9,29 @@ public class PlayerInfo : MonoBehaviour
 
 	//parameters
 	public int m_Team = -1;
-	public string m_Name = "Guest";
+	public string m_PlayerName = "Guest";
+	public bool m_Ready = false;
+
+
+	//
+	// Init
+	//
+	void Awake()
+	{
+		if(TNManager.isThisMyObject)
+		{
+			instance = this;
+		}else
+			enabled = false;
+	}
+
+	//
+	//
+	//
+	void Start()
+	{
+		GameObject.Find("Lobby").GetComponent<Lobby>().AddPlayer(PlayerInfo.instance);
+	}
 
 
 	//
@@ -25,7 +47,15 @@ public class PlayerInfo : MonoBehaviour
 	//
 	[RFC] public void SetName(string pname)
 	{
-		m_Name = pname;
+		m_PlayerName = pname;
+	}
+
+	//
+	// Set ready
+	//
+	[RFC] public void SetReady(bool ready)
+	{
+		m_Ready = ready;
 	}
 }
 

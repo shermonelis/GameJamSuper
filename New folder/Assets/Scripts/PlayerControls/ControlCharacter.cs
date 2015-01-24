@@ -48,11 +48,6 @@ public class ControlCharacter : TNBehaviour {
 		m_UsableObject = null;
 	}
 
-	[RFC] public void test()
-	{
-		Debug.Log("test");
-	}
-
 	//
 	// Process
 	//
