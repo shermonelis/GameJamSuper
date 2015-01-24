@@ -122,8 +122,12 @@ public class ControlCharacter : TNBehaviour {
 	//
 	private void Rotate()
 	{
-		//f_newRotation.
-	//	transform.eulerAngles = Vector3.MoveTowards (transform.eulerAngles, f_newRotation, Time.deltaTime *500 );
+		if(m_Stunned)
+			return;
+
+		f_newRotation.eulerAngles = new Vector3(f_newRotation.eulerAngles.x, f_newRotation.eulerAngles.y + Input.GetAxis("Mouse X") * 5 *m_MouseSensitivity, f_newRotation.eulerAngles.z);
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, f_newRotation, Time.deltaTime * 300);
+			//= Vector3.MoveTowards (transform.eulerAngles, f_newRotation, Time.deltaTime *500 );
 	}
 
 	//
