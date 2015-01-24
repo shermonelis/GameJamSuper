@@ -68,12 +68,12 @@ public class ControlCharacter : TNBehaviour {
 	{
 
 		ProcessPosition();
+		ProcessStuns();
+
 
 		if(!m_MyObject)
 			return;
 
-
-		ProcessStuns();
 		Inputs();
 
 		Rotate();
@@ -105,7 +105,7 @@ public class ControlCharacter : TNBehaviour {
 			Jump ();
 
 		if(Input.GetKeyDown(KeyCode.E))
-			PickDropObject();
+			CallPickDropObject();
 
 		if(Input.GetMouseButtonDown(0))
 			Hit();
@@ -144,11 +144,10 @@ public class ControlCharacter : TNBehaviour {
 	public void ProcessStuns()
 	{
 		if(m_Stunned)
-			m_StunTimer -= Time.deltaTime;
-		else
 		{
-			m_Stunned = false;
-			m_StunTimer = 0;
+			m_StunTimer -= Time.deltaTime;
+			if(m_StunTimer <= 0)
+				m_Stunned = false;
 		}
 	}
 
@@ -215,13 +214,19 @@ public class ControlCharacter : TNBehaviour {
 		}
 	}
 
+	private void CallPickDropObject()
+	{
+		tno.Send("PickDropObject", Target.All);
+	}
+
 	//
 	//
 	//
-	private void PickDropObject()
+	[RFC] private void PickDropObject()
 	{
 		if(m_PickedObject !=null){
-			m_PickedObject.GetComponent<Rigidbody>().isKinematic = false;
+			//m_PickedObject.GetComponent<Rigidbody>().isKinematic = false;
+			m_PickedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
 			m_PickedObject.transform.parent = null;
 			m_PickedObject = null;
 		}
@@ -232,7 +237,9 @@ public class ControlCharacter : TNBehaviour {
 			m_PickedObject.transform.parent = pivot;
 			m_PickedObject.transform.localPosition = new Vector3 (0,0,m_PickedObject.collider.bounds.size.x);
 			m_PickedObject.transform.localRotation = Quaternion.identity;
-			m_PickedObject.GetComponent<Rigidbody>().isKinematic = true;
+			//m_PickedObject.GetComponent<Rigidbody>().isKinematic = true;
+
+			m_PickedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		}
 
 	}
