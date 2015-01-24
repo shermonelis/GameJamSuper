@@ -19,7 +19,7 @@ public class ControlCharacter : TNBehaviour {
 	public Transform m_Bottom;
 
 	public Vector3 f_newPosition;
-	public Vector3 f_newRotation;
+	public Quaternion f_newRotation;
 
 	//
 	// Init
@@ -37,7 +37,7 @@ public class ControlCharacter : TNBehaviour {
 		}
 	}
 	void Start(){
-		f_newRotation=transform.eulerAngles;
+		f_newRotation=transform.rotation;
 		f_newPosition = transform.position;
 	}
 	//
@@ -90,16 +90,15 @@ public class ControlCharacter : TNBehaviour {
 		if(Input.GetKeyDown(KeyCode.E))
 			PickDropObject();
 
-		transform.position = Vector3.Lerp(transform.position, f_newPosition, Time.deltaTime);
+		transform.position = Vector3.MoveTowards(transform.position, new Vector3(f_newPosition.x, transform.position.y, f_newPosition.z), Time.deltaTime * m_Speed * 10);
 	}
-
 	//
 	// Look around
 	//
 	private void Rotate()
 	{
-		f_newRotation = new Vector3(0, Input.mousePosition.x*m_MouseSensitivity, 0);
-		transform.eulerAngles = Vector3.Lerp( transform.eulerAngles, f_newRotation, Time.deltaTime);
+		//f_newRotation.
+	//	transform.eulerAngles = Vector3.MoveTowards (transform.eulerAngles, f_newRotation, Time.deltaTime *500 );
 	}
 
 	//
