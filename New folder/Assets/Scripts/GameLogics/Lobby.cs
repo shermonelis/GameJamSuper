@@ -58,7 +58,7 @@ public class Lobby : TNBehaviour
 	{
 		if(m_ReadyCount == m_PlayerCount && m_PlayerCount > 0)
 		{
-			TNManager.Create(GameObject.Find("Network").GetComponent<TNManager>().objects[0], true);
+			TNManager.Create(GameObject.Find("Network").GetComponent<TNManager>().objects[0], false);
 			Destroy(this);
 			Application.LoadLevel("Game");
 			

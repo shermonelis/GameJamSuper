@@ -30,9 +30,11 @@ public class ControlCharacter : TNBehaviour {
 			m_NetObject = GetComponent<TNObject>();
 			m_Bottom = transform.Find("Bottom");
 		}else
+		{
+			gameObject.transform.Find("Camera").GetComponent<Camera>().enabled  = false;
 			enabled = false;
+		}
 	}
-
 	//
 	// Set pickable objet. called from trigger
 	//
