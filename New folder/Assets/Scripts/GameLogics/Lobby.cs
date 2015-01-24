@@ -36,8 +36,9 @@ public class Lobby : TNBehaviour
 				readycount++;
 			}
 		}
-		if(readycount == pinfos.Length && pinfos.Length > 1)
+		if(readycount == pinfos.Length && pinfos.Length > 0)
 			Application.LoadLevel("Game");
+
 	}
 
 	public void SelectTeam(int team)
