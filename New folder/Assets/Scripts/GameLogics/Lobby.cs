@@ -5,6 +5,18 @@ using TNet;
 
 public class Lobby : TNBehaviour
 {
+	public static Lobby instance;
+
+	private int m_ReadyCount = 0;
+	private int m_PlayerCount = 0;
+	void Awake()
+	{
+		if(TNManager.isThisMyObject)
+		{
+			instance = this;
+		}else
+			enabled = false;
+	}
 
 	void OnGUI()
 	{
@@ -19,7 +31,7 @@ public class Lobby : TNBehaviour
 		if(GUI.Button(new Rect(Screen.width/2 - 100, Screen.height/2, 200, 40), "Set Ready"))
 			SetReady();
 
-		int readycount = 0;
+		m_ReadyCount = 0;
 		for(var p = 0; p < pinfos.Length; p++)
 		{
 			switch(pinfos[p].m_Team)
@@ -33,12 +45,24 @@ public class Lobby : TNBehaviour
 			{
 				GUI.color = Color.white;
 				GUI.Box(new Rect(200, (30 * p), 100, 30), "Ready");
-				readycount++;
+				m_ReadyCount++;
 			}
 		}
-		if(readycount == pinfos.Length && pinfos.Length > 0)
-			Application.LoadLevel("Game");
 
+		m_PlayerCount = pinfos.Length;
+
+
+	}
+
+	void FixedUpdate()
+	{
+		if(m_ReadyCount == m_PlayerCount && m_PlayerCount > 0)
+		{
+			TNManager.Create(GameObject.Find("Network").GetComponent<TNManager>().objects[0], true);
+			Destroy(this);
+			Application.LoadLevel("Game");
+			
+		}
 	}
 
 	public void SelectTeam(int team)

@@ -11,4 +11,6 @@ public class SpawnCharacter : MonoBehaviour
 	{
 		TNManager.Create(GetComponent<TNManager>().objects[1], false);
 	}
+
+
 }
