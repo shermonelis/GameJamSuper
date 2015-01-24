@@ -4,27 +4,19 @@ using TNet;
 
 public class ScoreLogic : TNBehaviour 
 {
-	void OnTriggerEnter(Collider collider)
+	public Obelisk m_Red;
+	public Obelisk m_Blue;
+
+
+	void Start()
 	{
-		if(collider.CompareTag("Part"))
-		{
-			if(collider.transform.parent != null)
-			{
-				if(collider.transform.parent.tag == gameObject.tag)
-					AddPoint();
-				else
-					RemovePoint();
-			}
-		}
+		m_Blue = GameObject.Find("Obelisk_Blue").GetComponent<Obelisk>();
+		m_Red = GameObject.Find("Obelisk_Red").GetComponent<Obelisk>();
 	}
 
-	public void AddPoint()
+
+	void OnGUI()
 	{
-
-	}
-
-	public void RemovePoint()
-	{
-
+		GUI.Box(new Rect(0,0,400,50), "Red team : " + m_Red.m_TaskNumber + " Blue team : " + m_Blue.m_TaskNumber);
 	}
 }
