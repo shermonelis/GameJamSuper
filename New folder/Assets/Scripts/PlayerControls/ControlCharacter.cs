@@ -81,7 +81,7 @@ public class ControlCharacter : TNBehaviour {
 			Jump ();
 
 		if(Input.GetKeyDown(KeyCode.E))
-			PickObject();
+			PickDropObject();
 	}
 
 	//
@@ -147,14 +147,23 @@ public class ControlCharacter : TNBehaviour {
 	//
 	//
 	//
-	private void PickObject()
+	private void PickDropObject()
 	{
-		if(m_UsableObject != null)
-		{
+		if(m_PickedObject !=null){
+			m_PickedObject.GetComponent<Rigidbody>().isKinematic = false;
+			m_PickedObject.transform.parent = null;
+			m_PickedObject = null;
+		}
+		if(m_UsableObject != null){
 			m_PickedObject = m_UsableObject;
 			m_UsableObject = null;
-			m_PickedObject.transform.parent = gameObject.transform;
+			Transform pivot = gameObject.transform.FindChild("PickedObjectPivot");
+			m_PickedObject.transform.parent = pivot;
+			m_PickedObject.transform.localPosition = new Vector3 (0,0,m_PickedObject.collider.bounds.size.x);
+			m_PickedObject.transform.localRotation = Quaternion.identity;
+			m_PickedObject.GetComponent<Rigidbody>().isKinematic = true;
 		}
+
 	}
 
 	//
