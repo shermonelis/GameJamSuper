@@ -24,7 +24,14 @@ public class Obelisk : TNBehaviour {
 		if(col.CompareTag("Part"))
 		{
 			if(col.renderer.material.color == m_Colors[m_TaskNumber])
-				AddPoint(col.gameObject);
+			{
+				Debug.Log("enter fit");
+				col.rigidbody.isKinematic = true;
+				col.transform.position = m_Transforms[m_TaskNumber].position;
+				col.transform.parent = m_Transforms[m_TaskNumber];
+				m_TaskNumber++;
+				tno.Send("AddPoint", Target.Others);
+			}
 		}
 	}
 
@@ -41,19 +48,21 @@ public class Obelisk : TNBehaviour {
 				}
 			}
 			if(index < m_TaskNumber)
-				RemovePoint();
+			{
+				m_TaskNumber--;
+				tno.Send("RemovePoint", Target.Others);
+			}
 		}
 	}
 
-	private void RemovePoint()
+	[RFC] private void RemovePoint()
 	{
+		Debug.Log("call");
 		m_TaskNumber--;
 	}
 
-	private void AddPoint(GameObject g)
+	[RFC] private void AddPoint()
 	{
-		g.transform.position = m_Transforms[m_TaskNumber].position;
-		g.transform.parent = m_Transforms[m_TaskNumber];
 		m_TaskNumber++;
 	}
 }

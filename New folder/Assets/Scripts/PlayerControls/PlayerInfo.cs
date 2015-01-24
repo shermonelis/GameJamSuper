@@ -11,7 +11,7 @@ public class PlayerInfo : TNBehaviour
 	public int m_Team = -1;
 	public string m_PlayerName = "Guest";
 	public bool m_Ready = false;
-
+	public bool m_FirstPlayer = false;
 
 	//
 	// Init
@@ -20,10 +20,15 @@ public class PlayerInfo : TNBehaviour
 	{
 		if(TNManager.isThisMyObject)
 		{
+
 			instance = this;
-			DontDestroyOnLoad(gameObject);
 		}else
 			enabled = false;
+	}
+
+	void Start()
+	{
+		DontDestroyOnLoad(gameObject);
 	}
 
 	public bool isReady()
@@ -56,6 +61,15 @@ public class PlayerInfo : TNBehaviour
 	[RFC] public void SetReady(bool ready)
 	{
 		m_Ready = ready;
+	}
+
+	//
+	// Set first player
+	//
+	public void CallSetFirstPlayer(bool first) { tno.Send("SetFirstPlayer", Target.AllSaved, first); }
+	[RFC] public void SetFirstPlayer(bool first)
+	{
+		m_FirstPlayer = first;
 	}
 }
 
