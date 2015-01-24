@@ -115,6 +115,7 @@ public class ControlCharacter : TNBehaviour {
 	private void ProcessPosition()
 	{
 		transform.position = Vector3.MoveTowards(transform.position, new Vector3(f_newPosition.x, transform.position.y, f_newPosition.z), Time.deltaTime * m_Speed * 10);
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, f_newRotation, Time.deltaTime * 300);
 	}
 
 	//
@@ -126,7 +127,6 @@ public class ControlCharacter : TNBehaviour {
 			return;
 
 		f_newRotation.eulerAngles = new Vector3(f_newRotation.eulerAngles.x, f_newRotation.eulerAngles.y + Input.GetAxis("Mouse X") * 5 *m_MouseSensitivity, f_newRotation.eulerAngles.z);
-		transform.rotation = Quaternion.RotateTowards(transform.rotation, f_newRotation, Time.deltaTime * 300);
 			//= Vector3.MoveTowards (transform.eulerAngles, f_newRotation, Time.deltaTime *500 );
 	}
 
