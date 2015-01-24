@@ -16,6 +16,9 @@ public class ControlCharacter : TNBehaviour {
 	public GameObject m_UsableObject;
 	public GameObject m_PickedObject;
 
+	public bool m_Stunned;
+	public float m_StunTimer;
+
 	public Transform m_Bottom;
 
 	public Vector3 f_newPosition;
@@ -61,10 +64,12 @@ public class ControlCharacter : TNBehaviour {
 	//
 	void Update () 
 	{
+		ProcessStuns();
 		Movement();
 
 		Rotate();
 		Animate();
+
 	}
 
 	//
@@ -72,6 +77,9 @@ public class ControlCharacter : TNBehaviour {
 	//
 	private void Movement()
 	{
+		if(m_Stunned)
+			return;
+
 		if(Input.GetKey(KeyCode.W))
 			f_newPosition += transform.forward * m_Speed * Time.deltaTime;
 		
@@ -90,6 +98,9 @@ public class ControlCharacter : TNBehaviour {
 		if(Input.GetKeyDown(KeyCode.E))
 			PickDropObject();
 
+		if(Input.GetMouseButtonDown(0))
+			Hit();
+
 		transform.position = Vector3.Lerp(transform.position, f_newPosition, Time.deltaTime);
 	}
 
@@ -100,6 +111,39 @@ public class ControlCharacter : TNBehaviour {
 	{
 		f_newRotation = new Vector3(0, Input.mousePosition.x*m_MouseSensitivity, 0);
 		transform.eulerAngles = Vector3.Lerp( transform.eulerAngles, f_newRotation, Time.deltaTime);
+	}
+
+	//
+	// Get stun
+	//
+	public void CallApplyStun()
+	{
+		tno.Send("ApplyStun", Target.All);
+	}
+
+	//
+	//
+	//
+	public void ProcessStuns()
+	{
+		if(m_Stunned)
+			m_StunTimer -= Time.deltaTime;
+		else
+		{
+			m_Stunned = false;
+			m_StunTimer = 0;
+		}
+	}
+
+	public void Hit()
+	{
+		Ray r = new Ray(transform.position, transform.forward * 5);
+		RaycastHit hit;
+		if(Physics.Raycast(r, out hit))
+		{
+			if(hit.collider.CompareTag("Player"))
+				hit.collider.GetComponent<ControlCharacter>().CallApplyStun();
+		}
 	}
 
 	//
@@ -184,5 +228,13 @@ public class ControlCharacter : TNBehaviour {
 		animation.CrossFade(name);
 	}
 
-
+	//
+	// network stun
+	//
+	[RFC] public void ApplyStun()
+	{
+		m_Stunned = true;
+		m_StunTimer = 1.5f;
+	}
+	
 }

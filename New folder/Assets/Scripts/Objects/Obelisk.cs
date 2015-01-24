@@ -25,7 +25,6 @@ public class Obelisk : TNBehaviour {
 		{
 			if(col.renderer.material.color == m_Colors[m_TaskNumber])
 			{
-				Debug.Log("enter fit");
 				col.rigidbody.isKinematic = true;
 				col.transform.position = m_Transforms[m_TaskNumber].position;
 				col.transform.parent = m_Transforms[m_TaskNumber];
@@ -57,7 +56,6 @@ public class Obelisk : TNBehaviour {
 
 	[RFC] private void RemovePoint()
 	{
-		Debug.Log("call");
 		m_TaskNumber--;
 	}
 
