@@ -4,16 +4,48 @@ using TNet;
 
 public class ControlCharacter : TNBehaviour {
 
-
+	// instance
 	public static ControlCharacter instance;
 
 
+	//parameters
+	public TNObject m_NetObject;
+
+	public float m_Speed = 5;
+	public Vector3 m_LastPosition;
+	public GameObject m_UsableObject;
+	public GameObject m_PickedObject;
+
+	public Transform m_Bottom;
+
+	//
+	// Init
+	//
 	void Awake()
 	{
 		if(TNManager.isThisMyObject)
+		{
 			instance = this;
-		else
-			Destroy(this);
+			m_NetObject = GetComponent<TNObject>();
+			m_Bottom = transform.Find("Bottom");
+		}else
+			enabled = false;
+	}
+
+	//
+	// Set pickable objet. called from trigger
+	//
+	public void SetPickableObject(GameObject g)
+	{
+		m_UsableObject = g;
+	}
+
+	//
+	// Remove pickable objet. called from trigger
+	//
+	public void RemovePickableObject()
+	{
+		m_UsableObject = null;
 	}
 
 	[RFC] public void test()
@@ -21,17 +53,122 @@ public class ControlCharacter : TNBehaviour {
 		Debug.Log("test");
 	}
 
-	// Update is called once per frame
+	//
+	// Process
+	//
 	void Update () 
 	{
+		Movement();
 
-		if(Input.GetKeyDown(KeyCode.CapsLock))
-			GetComponent<TNObject>().Send("test", Target.All);
-
-		if(Input.GetKey(KeyCode.W))
-			transform.position += transform.forward * 5 * Time.deltaTime;
-	
-		if(Input.GetKey(KeyCode.S))
-			transform.position += transform.forward * -5 * Time.deltaTime;
+		Rotate();
+		Animate();
 	}
+
+	//
+	// Character movement
+	//
+	private void Movement()
+	{
+		if(Input.GetKey(KeyCode.W))
+			transform.position += transform.forward * m_Speed * Time.deltaTime;
+		
+		if(Input.GetKey(KeyCode.S))
+			transform.position += transform.forward * -m_Speed * Time.deltaTime;
+		
+		if(Input.GetKey(KeyCode.D))
+			transform.position += transform.right * m_Speed * Time.deltaTime;
+		
+		if(Input.GetKey(KeyCode.A))
+			transform.position += transform.right * -m_Speed * Time.deltaTime;
+
+		if(Input.GetKeyDown(KeyCode.Space))
+			Jump();
+
+		if(Input.GetKeyDown(KeyCode.E))
+			PickObject();
+	}
+
+	//
+	// Look around
+	//
+	private void Rotate()
+	{
+		transform.eulerAngles = new Vector3(0, Input.mousePosition.x, 0);
+	}
+
+	//
+	// Jump
+	//
+	private void Jump()
+	{
+		if(IsGrounded())
+			transform.position += transform.up * m_Speed;
+	}
+
+	private bool IsGrounded () 
+	{
+		Ray r = new Ray(m_Bottom.position, Vector3.down * 10);
+		RaycastHit hit;
+		if(Physics.Raycast(r, out hit))
+		{
+			Debug.DrawLine(m_Bottom.position, hit.point);
+			if(Vector3.Distance(m_Bottom.position, hit.point) > 1f)
+				return false;
+		} 
+		return true;
+	}
+
+	//
+	// Process animation
+	//
+	private void Animate()
+	{
+		if(!IsGrounded())
+		{
+			if(!animation.IsPlaying("jump_pose"))
+			{
+				animation.CrossFade("jump_pose");
+				m_NetObject.Send("CallAnimation", Target.Others, "jump_pose");
+			}
+
+		}else if(m_LastPosition != transform.position)
+		{
+			if(!animation.IsPlaying("run"))
+			{
+				animation.CrossFade("run");
+				m_NetObject.Send("CallAnimation", Target.Others, "run");
+			}
+			m_LastPosition = transform.position;
+		}else
+		{
+			if(!animation.IsPlaying("idle"))
+			{
+				animation.CrossFade("idle");
+				m_NetObject.Send("CallAnimation", Target.Others, "idle");
+			}
+		}
+	}
+
+	//
+	//
+	//
+	private void PickObject()
+	{
+		if(m_UsableObject != null)
+		{
+			m_PickedObject = m_UsableObject;
+			m_UsableObject = null;
+			m_PickedObject.transform.parent = gameObject.transform;
+		}
+	}
+
+	//
+	// network animation
+	//
+	[RFC] private void CallAnimation(string name)
+	{
+		animation.CrossFade(name);
+	}
+
+
 }
