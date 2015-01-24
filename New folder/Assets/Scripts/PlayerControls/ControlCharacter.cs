@@ -10,8 +10,9 @@ public class ControlCharacter : TNBehaviour {
 
 	//parameters
 	public TNObject m_NetObject;
-
 	public float m_Speed = 5;
+	public float m_MouseSensitivity = 0.5f;
+	public float m_JumpingSpeed = 7f;
 	public Vector3 m_LastPosition;
 	public GameObject m_UsableObject;
 	public GameObject m_PickedObject;
@@ -81,8 +82,8 @@ public class ControlCharacter : TNBehaviour {
 		if(Input.GetKey(KeyCode.A))
 			transform.position += transform.right * -m_Speed * Time.deltaTime;
 
-		if(Input.GetKeyDown(KeyCode.Space))
-			Jump();
+		if(Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+			Jump ();
 
 		if(Input.GetKeyDown(KeyCode.E))
 			PickObject();
@@ -93,7 +94,7 @@ public class ControlCharacter : TNBehaviour {
 	//
 	private void Rotate()
 	{
-		transform.eulerAngles = new Vector3(0, Input.mousePosition.x, 0);
+		transform.eulerAngles = new Vector3(0, Input.mousePosition.x*m_MouseSensitivity, 0);
 	}
 
 	//
@@ -101,8 +102,7 @@ public class ControlCharacter : TNBehaviour {
 	//
 	private void Jump()
 	{
-		if(IsGrounded())
-			transform.position += transform.up * m_Speed;
+		rigidbody.velocity = new Vector3 (0, m_JumpingSpeed, 0);
 	}
 
 	private bool IsGrounded () 
