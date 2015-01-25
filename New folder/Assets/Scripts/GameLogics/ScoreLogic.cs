@@ -8,7 +8,8 @@ public class ScoreLogic : TNBehaviour
 	public Obelisk m_Blue;
 
 	public GUISkin m_Skin;
-
+	public AudioClip winSound;
+	public AudioClip[] looseSound;
 	void Start()
 	{
 		m_Blue = GameObject.Find("Obelisk_Blue").GetComponent<Obelisk>();
@@ -27,10 +28,19 @@ public class ScoreLogic : TNBehaviour
 		GUI.Label(new Rect(Screen.width/2 - 50, 15, 100, 50), m_Red.m_TaskNumber + "-" + m_Blue.m_TaskNumber);
 
 		
-		if(m_Blue.m_TaskNumber >= 4)
+		if(m_Blue.m_TaskNumber >= 4){
 			GUI.Box(new Rect(Screen.width/2 - 640, Screen.height/2 - 360, 1280, 720), "", "BlueWins");
-
-		if(m_Red.m_TaskNumber >= 4)
+			if(PlayerInfo.instance.m_Team==0)
+				audio.PlayOneShot(winSound);
+			else
+				audio.PlayOneShot(looseSound[Mathf.FloorToInt(Random.Range(0, 1.9f))]);
+		}
+		if(m_Red.m_TaskNumber >= 4){
 			GUI.Box(new Rect(Screen.width/2 - 640, Screen.height/2 - 360, 1280, 720), "", "RedWins");
+			if(PlayerInfo.instance.m_Team==1)
+				audio.PlayOneShot(winSound);
+			else
+				audio.PlayOneShot(looseSound[Mathf.FloorToInt(Random.Range(0, 1.9f))]);
+		}
 	}
 }

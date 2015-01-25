@@ -8,6 +8,7 @@ public class Obelisk : TNBehaviour {
 	public Color[] m_Colors = new Color[4];
 	public Transform[] m_Transforms = new Transform[4];
 	public int m_TaskNumber = 0;
+	public AudioClip insertCubeSound;
 
 	void Start()
 	{
@@ -42,6 +43,8 @@ public class Obelisk : TNBehaviour {
 				//col.transform.parent = m_Transforms[m_TaskNumber];
 				m_TaskNumber++;
 				tno.Send("AddPoint", Target.Others);
+
+				audio.PlayOneShot(insertCubeSound);
 			}
 		}
 	}
