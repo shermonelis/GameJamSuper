@@ -20,7 +20,9 @@ public class ControlCharacter : TNBehaviour {
 	public float m_StunDuration = 2f;
 	float m_StunTimer;
 	TNManager m_tnManager;
+
 	public Transform m_Bottom;
+	public Transform m_PickSpot;
 
 	public Vector3 f_newPosition;
 	public Quaternion f_newRotation;
@@ -36,6 +38,7 @@ public class ControlCharacter : TNBehaviour {
 			instance = this;
 			m_NetObject = GetComponent<TNObject>();
 			m_Bottom = transform.Find("Bottom");
+			m_PickSpot = transform.FindChild("PickedObjectPivot");
 		}else{
 			gameObject.transform.Find("Camera").GetComponent<Camera>().enabled = false;
 			//enabled = false;
@@ -72,10 +75,11 @@ public class ControlCharacter : TNBehaviour {
 
 		ProcessPosition();
 		ProcessStuns();
-
+		ProcessPickedObject();
 
 		if(!m_MyObject)
 			return;
+
 
 		Inputs();
 
@@ -118,6 +122,19 @@ public class ControlCharacter : TNBehaviour {
 	{
 		transform.position = Vector3.MoveTowards(transform.position, new Vector3(f_newPosition.x, transform.position.y, f_newPosition.z), Time.deltaTime * m_Speed);
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, f_newRotation, Time.deltaTime * 300);
+	}
+
+	private void ProcessPickedObject()
+	{
+		if(m_PickedObject != null)
+		{
+			PickableObject po = m_PickedObject.GetComponent<PickableObject>();
+			if(po.State == 1 && po.TeamOwner == PlayerInfo.instance.m_Team)
+			{
+				m_PickedObject.GetComponent<PickableObject>().f_newPosition = m_PickSpot.position + new Vector3 (0,0,m_PickedObject.collider.bounds.size.x);
+			}else
+				m_PickedObject = null;
+		}
 	}
 
 	//
@@ -198,7 +215,15 @@ public class ControlCharacter : TNBehaviour {
 	//
 	private void Animate()
 	{
-		if(!IsGrounded())
+
+		if(m_Stunned)
+		{
+			if(!animation.IsPlaying("Stun"))
+			{
+				animation.CrossFade("Stun");
+				m_NetObject.Send("CallAnimation", Target.Others, "Stun");
+			}
+		}else if(!IsGrounded())
 		{
 			if(!animation.IsPlaying("Jump"))
 			{
@@ -208,10 +233,20 @@ public class ControlCharacter : TNBehaviour {
 
 		}else if(m_LastPosition != f_newPosition)
 		{
-			if(!animation.IsPlaying("Run"))
+			if(m_PickSpot.transform.childCount > 0)
 			{
-				animation.CrossFade("Run");
-				m_NetObject.Send("CallAnimation", Target.Others, "Run");
+				if(!animation.IsPlaying("Carry"))
+				{
+					animation.CrossFade("Carry");
+					m_NetObject.Send("CallAnimation", Target.Others, "Carry");
+				}
+			}else
+			{
+				if(!animation.IsPlaying("Run"))
+				{
+					animation.CrossFade("Run");
+					m_NetObject.Send("CallAnimation", Target.Others, "Run");
+				}
 			}
 			m_LastPosition = f_newPosition;
 		}else
@@ -226,30 +261,86 @@ public class ControlCharacter : TNBehaviour {
 
 	private void CallPickDropObject()
 	{
-		tno.Send("PickDropObject", Target.All);
+		PickDropObject();
+		//tno.Send("PickDropObject", Target.All);
 	}
 
 	//
 	//
 	//
-	[RFC] private void PickDropObject()
+	public void PickDropObject()
 	{
-		if(m_PickedObject !=null){
-			//m_PickedObject.GetComponent<Rigidbody>().isKinematic = false;
-			m_PickedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
-			m_PickedObject.transform.parent = null;
-			m_PickedObject = null;
-		}
+//		if(m_PickedObject !=null)
+//		{
+//			//m_PickedObject.GetComponent<Rigidbody>().isKinematic = false;
+//			//m_PickedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+//			//m_PickedObject.transform.parent = null;
+//			m_PickedObject = null;
+//		}
 		if(m_UsableObject != null){
-			m_PickedObject = m_UsableObject;
-			m_UsableObject = null;
-			Transform pivot = gameObject.transform.FindChild("PickedObjectPivot");
-			m_PickedObject.transform.parent = pivot;
-			m_PickedObject.transform.localPosition = new Vector3 (0,0,m_PickedObject.collider.bounds.size.x);
-			m_PickedObject.transform.localRotation = Quaternion.identity;
+
+			PickableObject po = m_UsableObject.GetComponent<PickableObject>();
+
+			switch(po.State)
+			{
+			case 0:
+				Debug.Log("state 0 dropped" );
+				m_PickedObject = m_UsableObject;
+				po.GetComponent<PickableObject>().CallSetState(1);
+				po.CallSetTeam(PlayerInfo.instance.m_Team);
+
+				po.State = 1;
+				po.TeamOwner = PlayerInfo.instance.m_Team;
+
+				m_UsableObject = null;
+			break;
+			case 1:
+				Debug.Log("state 1 mooving" );
+				if(PlayerInfo.instance.m_Team != po.TeamOwner)
+				{
+					m_UsableObject.GetComponent<PickableObject>().CallSetState(0);
+					po.State = 0;
+				}
+			break;
+			case 2:
+				Debug.Log("state 2 obelisk" );
+				m_PickedObject = m_UsableObject;
+				po.GetComponent<PickableObject>().CallSetState(1);
+				po.CallSetTeam(PlayerInfo.instance.m_Team);
+				po.State = 1;
+				po.TeamOwner = PlayerInfo.instance.m_Team;
+				m_UsableObject = null;
+			break;
+			}
+//
+//			if(true)
+//			{
+//				m_UsableObject.GetComponent<PickableObject>().CallSetMooving(true);
+//				m_UsableObject.GetComponent<PickableObject>().CallSetBusy(true);
+//				m_PickedObject = m_UsableObject;
+//				//m_UsableObject = null;
+//				Debug.Log("not moovable");
+//			}else if(m_UsableObject.GetComponent<PickableObject>().m_Busy)
+//			{
+//				m_UsableObject.GetComponent<PickableObject>().SetMooving(true);
+//				m_UsableObject.GetComponent<PickableObject>().CallSetBusy(false);
+//				//m_UsableObject = null;
+//				Debug.Log("bussy");
+//			}else
+//			{
+//				Debug.Log("pick");
+//				m_PickedObject = m_UsableObject;
+//				m_UsableObject.GetComponent<PickableObject>().CallSetBusy(true);
+//				m_UsableObject = null;
+//			}
+
+			//Transform pivot = 
+			//m_PickedObject.transform.parent = m_PickSpot;
+				
+			//m_PickedObject.transform.localRotation = Quaternion.identity;
 			//m_PickedObject.GetComponent<Rigidbody>().isKinematic = true;
 
-			m_PickedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+			//m_PickedObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		}
 
 	}

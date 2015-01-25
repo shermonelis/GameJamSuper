@@ -20,7 +20,10 @@ public class Generator : TNBehaviour {
 	LayerMask layer = 1 << 8;
 
 	SetMasterPlayer playerScript;
-	void Start () {
+	void Start () 
+	{
+		return;
+
 		playerScript = GameObject.Find("PlayerInfo(Clone)").GetComponent<SetMasterPlayer>() as SetMasterPlayer;
 		TNManager m_tnManager = GameObject.Find("Network").GetComponent<TNManager>();
 		m_NetObject = GetComponent<TNObject>();
