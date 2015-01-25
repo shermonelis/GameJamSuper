@@ -31,6 +31,12 @@ public class ControlCharacter : TNBehaviour {
 	public Quaternion f_newRotation;
 
 	public bool m_MyObject = true;
+	public AudioClip[] jumpAudio;
+	public AudioClip gotPunched;
+	public AudioClip punchMissed;
+	public AudioClip pickCubeSound;
+	public AudioClip stealCubeSound;
+
 	//
 	// Init
 	//
@@ -192,6 +198,8 @@ public class ControlCharacter : TNBehaviour {
 
 	public void Hit()
 	{
+		audio.PlayOneShot(punchMissed);
+
 		Ray r = new Ray(transform.position, transform.forward);
 		RaycastHit hit;
 		if(Physics.Raycast(r, out hit, m_StunDistance))	{
@@ -215,6 +223,7 @@ public class ControlCharacter : TNBehaviour {
 		if(m_PickedObject !=null){
 			CallPickDropObject();
 		}
+		audio.PlayOneShot(jumpAudio[Mathf.FloorToInt(Random.Range(0, 1.9f))]);
 	}
 
 	private bool IsGrounded () 
@@ -308,6 +317,7 @@ public class ControlCharacter : TNBehaviour {
 				m_PickedObject = m_UsableObject;
 				po.GetComponent<PickableObject>().CallSetState(1);
 				po.CallSetTeam(PlayerInfo.instance.m_Team);
+				audio.PlayOneShot(pickCubeSound);
 
 				po.State = 1;
 				po.TeamOwner = PlayerInfo.instance.m_Team;
@@ -330,6 +340,9 @@ public class ControlCharacter : TNBehaviour {
 				po.State = 1;
 				po.TeamOwner = PlayerInfo.instance.m_Team;
 				m_UsableObject = null;
+
+				audio.PlayOneShot(stealCubeSound);
+
 			break;
 			}
 //
@@ -388,6 +401,8 @@ public class ControlCharacter : TNBehaviour {
 		GameObject effect = GameObject.Instantiate(m_tnManager.objects[3], pos, Quaternion.identity) as GameObject;
 		effect.transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);
 		Destroy(effect, m_StunDuration);
+
+		audio.PlayOneShot(gotPunched);
 	}
 
 	[RFC] public void SetBlueMaterial()
