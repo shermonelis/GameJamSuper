@@ -190,26 +190,26 @@ public class ControlCharacter : TNBehaviour {
 	{
 		if(!IsGrounded())
 		{
-			if(!animation.IsPlaying("jump_pose"))
+			if(!animation.IsPlaying("Jump"))
 			{
-				animation.CrossFade("jump_pose");
-				m_NetObject.Send("CallAnimation", Target.Others, "jump_pose");
+				animation.CrossFade("Jump");
+				m_NetObject.Send("CallAnimation", Target.Others, "Jump");
 			}
 
 		}else if(m_LastPosition != f_newPosition)
 		{
-			if(!animation.IsPlaying("run"))
+			if(!animation.IsPlaying("Run"))
 			{
-				animation.CrossFade("run");
-				m_NetObject.Send("CallAnimation", Target.Others, "run");
+				animation.CrossFade("Run");
+				m_NetObject.Send("CallAnimation", Target.Others, "Run");
 			}
 			m_LastPosition = f_newPosition;
 		}else
 		{
-			if(!animation.IsPlaying("idle"))
+			if(!animation.IsPlaying("Idle"))
 			{
-				animation.CrossFade("idle");
-				m_NetObject.Send("CallAnimation", Target.Others, "idle");
+				animation.CrossFade("Idle");
+				m_NetObject.Send("CallAnimation", Target.Others, "Idle");
 			}
 		}
 	}
