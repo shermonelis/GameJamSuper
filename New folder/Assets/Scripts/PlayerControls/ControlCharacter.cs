@@ -15,10 +15,11 @@ public class ControlCharacter : TNBehaviour {
 	public Vector3 m_LastPosition;
 	public GameObject m_UsableObject;
 	public GameObject m_PickedObject;
-
+	public float m_StunDistance = 1.2f;
 	public bool m_Stunned;
-	public float m_StunTimer;
-
+	public float m_StunDuration = 2f;
+	float m_StunTimer;
+	TNManager m_tnManager;
 	public Transform m_Bottom;
 
 	public Vector3 f_newPosition;
@@ -44,6 +45,8 @@ public class ControlCharacter : TNBehaviour {
 	void Start(){
 		f_newRotation=transform.rotation;
 		f_newPosition = transform.position;
+		m_tnManager = GameObject.Find("Network").GetComponent<TNManager>();
+
 	}
 	//
 	// Set pickable objet. called from trigger
@@ -114,7 +117,7 @@ public class ControlCharacter : TNBehaviour {
 
 	private void ProcessPosition()
 	{
-		transform.position = Vector3.MoveTowards(transform.position, new Vector3(f_newPosition.x, transform.position.y, f_newPosition.z), Time.deltaTime * m_Speed * 10);
+		transform.position = Vector3.MoveTowards(transform.position, new Vector3(f_newPosition.x, transform.position.y, f_newPosition.z), Time.deltaTime * m_Speed);
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, f_newRotation, Time.deltaTime * 300);
 	}
 
@@ -153,12 +156,17 @@ public class ControlCharacter : TNBehaviour {
 
 	public void Hit()
 	{
-		Ray r = new Ray(transform.position, transform.forward * 5);
+		Ray r = new Ray(transform.position, transform.forward);
 		RaycastHit hit;
-		if(Physics.Raycast(r, out hit))
-		{
-			if(hit.collider.CompareTag("Player"))
+		if(Physics.Raycast(r, out hit, m_StunDistance))	{
+			if(hit.collider.CompareTag("Player")){
 				hit.collider.GetComponent<ControlCharacter>().CallApplyStun();
+				Vector3 pos = hit.collider.transform.position;
+				pos.y += 1f;
+				GameObject effect = GameObject.Instantiate(m_tnManager.objects[3], pos ,Quaternion.identity) as GameObject;
+				effect.transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);
+				Destroy(effect, 1.5f);
+			}
 		}
 	}
 
@@ -168,6 +176,9 @@ public class ControlCharacter : TNBehaviour {
 	private void Jump()
 	{
 		rigidbody.velocity = new Vector3 (0, m_JumpingSpeed, 0);
+		if(m_PickedObject !=null){
+			CallPickDropObject();
+		}
 	}
 
 	private bool IsGrounded () 
@@ -257,8 +268,16 @@ public class ControlCharacter : TNBehaviour {
 	//
 	[RFC] public void ApplyStun()
 	{
+		if(m_PickedObject !=null){
+			CallPickDropObject();
+		}
 		m_Stunned = true;
-		m_StunTimer = 1.5f;
+		m_StunTimer = m_StunDuration;
+		Vector3 pos = transform.position;
+		pos.y += 1f;
+		GameObject effect = GameObject.Instantiate(m_tnManager.objects[3], pos, Quaternion.identity) as GameObject;
+		effect.transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);
+		Destroy(effect, m_StunDuration);
 	}
 	
 }
