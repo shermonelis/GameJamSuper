@@ -56,7 +56,9 @@ public class Lobby : TNBehaviour
 	{
 		if(m_ReadyCount == m_PlayerCount && m_PlayerCount > 0)
 		{
-			TNManager.Create(GameObject.Find("Network").GetComponent<TNManager>().objects[0], false);
+			GameObject g = GameObject.Find("Network");
+			Vector3 position = g.GetComponent<RandomSpawn>().GetRandomPosition(PlayerInfo.instance.m_Team);
+			TNManager.Create(g.GetComponent<TNManager>().objects[0], position, Quaternion.identity , false);
 			Destroy(this);
 			Application.LoadLevelAdditive("Game");			
 		}
