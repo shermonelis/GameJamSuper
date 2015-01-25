@@ -112,7 +112,6 @@ public class ControlCharacter : TNBehaviour {
 
 		if(Input.GetMouseButtonDown(0))
 			Hit();
-
 	}
 
 	private void ProcessPosition()
