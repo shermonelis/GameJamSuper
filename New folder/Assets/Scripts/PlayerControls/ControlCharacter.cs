@@ -21,6 +21,9 @@ public class ControlCharacter : TNBehaviour {
 	float m_StunTimer;
 	TNManager m_tnManager;
 
+	public Material m_Blue;
+	public Material m_Red;
+
 	public Transform m_Bottom;
 	public Transform m_PickSpot;
 
@@ -35,12 +38,14 @@ public class ControlCharacter : TNBehaviour {
 	{
 		if(TNManager.isThisMyObject)
 		{
+
 			instance = this;
 			m_NetObject = GetComponent<TNObject>();
 			m_Bottom = transform.Find("Bottom");
 			m_PickSpot = transform.FindChild("PickedObjectPivot");
 		}else{
 			gameObject.transform.Find("Camera").GetComponent<Camera>().enabled = false;
+			gameObject.transform.Find("Camera").GetComponent<AudioListener>().enabled = false;
 			//enabled = false;
 			m_MyObject = false;
 		}
@@ -49,6 +54,19 @@ public class ControlCharacter : TNBehaviour {
 		f_newRotation=transform.rotation;
 		f_newPosition = transform.position;
 		m_tnManager = GameObject.Find("Network").GetComponent<TNManager>();
+
+		if(PlayerInfo.instance.m_Team == 0)
+		{
+			Debug.Log("Team blue");
+			gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Blue;
+			tno.Send("SetBlueMaterial", Target.AllSaved);
+		}
+		if(PlayerInfo.instance.m_Team == 1)
+		{
+			Debug.Log("Team red");
+			gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Red;
+			tno.Send("SetRedMaterial", Target.AllSaved);
+		}
 
 	}
 	//
@@ -368,6 +386,16 @@ public class ControlCharacter : TNBehaviour {
 		GameObject effect = GameObject.Instantiate(m_tnManager.objects[3], pos, Quaternion.identity) as GameObject;
 		effect.transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);
 		Destroy(effect, m_StunDuration);
+	}
+
+	[RFC] public void SetBlueMaterial()
+	{
+		gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Blue;
+	}
+
+	[RFC] public void SetRedMaterial()
+	{
+		gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Red;
 	}
 	
 }

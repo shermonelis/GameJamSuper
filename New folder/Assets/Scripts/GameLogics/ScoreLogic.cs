@@ -26,6 +26,11 @@ public class ScoreLogic : TNBehaviour
 
 		GUI.Label(new Rect(Screen.width/2 - 50, 15, 100, 50), m_Red.m_TaskNumber + "-" + m_Blue.m_TaskNumber);
 
-		//GUI.Box(new Rect(0,0,400,50), "Red team : " + m_Red.m_TaskNumber + " Blue team : " + m_Blue.m_TaskNumber);
+		
+		if(m_Blue.m_TaskNumber >= 4)
+			GUI.Box(new Rect(Screen.width/2 - 640, Screen.height/2 - 360, 1280, 720), "", "BlueWins");
+
+		if(m_Red.m_TaskNumber >= 4)
+			GUI.Box(new Rect(Screen.width/2 - 640, Screen.height/2 - 360, 1280, 720), "", "RedWins");
 	}
 }
