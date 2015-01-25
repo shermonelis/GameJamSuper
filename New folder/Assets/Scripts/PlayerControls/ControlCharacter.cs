@@ -55,17 +55,19 @@ public class ControlCharacter : TNBehaviour {
 		f_newPosition = transform.position;
 		m_tnManager = GameObject.Find("Network").GetComponent<TNManager>();
 
-		if(PlayerInfo.instance.m_Team == 0)
+		if(m_MyObject)
 		{
-			Debug.Log("Team blue");
-			gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Blue;
-			tno.Send("SetBlueMaterial", Target.AllSaved);
-		}
-		if(PlayerInfo.instance.m_Team == 1)
-		{
-			Debug.Log("Team red");
-			gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Red;
-			tno.Send("SetRedMaterial", Target.AllSaved);
+			if(PlayerInfo.instance.m_Team == 0)
+			{
+				Debug.Log("Team blue");
+				//gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Blue;
+				tno.Send("SetBlueMaterial", Target.AllSaved);
+			}else
+			{
+				Debug.Log("Team red");
+				//gameObject.transform.Find("group1/FagotukasFBX:Mesh").renderer.material = m_Red;
+				tno.Send("SetRedMaterial", Target.AllSaved);
+			}
 		}
 
 	}

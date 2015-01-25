@@ -8,6 +8,7 @@ public class ScoreLogic : TNBehaviour
 	public Obelisk m_Blue;
 
 	public GUISkin m_Skin;
+	
 
 	void Start()
 	{
@@ -32,5 +33,19 @@ public class ScoreLogic : TNBehaviour
 
 		if(m_Red.m_TaskNumber >= 4)
 			GUI.Box(new Rect(Screen.width/2 - 640, Screen.height/2 - 360, 1280, 720), "", "RedWins");
+
+
+		if(GUI.Button(new Rect(0,0,100,100), "Restart"))
+		{
+			tno.Send("RestartGame", Target.All);
+		}
 	}
+
+
+	[RFC] public void RestartGame()
+	{
+		Application.LoadLevel("Menu");
+	}
+
+	
 }

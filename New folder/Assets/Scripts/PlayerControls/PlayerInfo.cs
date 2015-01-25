@@ -13,6 +13,8 @@ public class PlayerInfo : TNBehaviour
 	public bool m_Ready = false;
 	public bool m_FirstPlayer = false;
 
+
+
 	//
 	// Init
 	//
@@ -27,7 +29,7 @@ public class PlayerInfo : TNBehaviour
 
 	void Start()
 	{
-		//DontDestroyOnLoad(gameObject);
+
 	}
 
 	public bool isReady()
